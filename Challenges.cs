@@ -32,7 +32,7 @@ public class Challenges {
     }
 
     public static void CHALLENGE_4(){
-        string[] CONTENTS = File.ReadAllLines("/home/jewpigeon/Рабочий стол/4.txt");
+        string[] CONTENTS = File.ReadAllLines("PATH");
 
             string Plain = XorBreaker.Break(CONTENTS).Key;
         Console.WriteLine(Plain);
@@ -49,7 +49,7 @@ public class Challenges {
 
     public static void CHALLENGE_6(){
         Console.WriteLine(VigenereBreaker.HammingDistance(Encoding.ASCII.GetBytes("this is a test"), Encoding.ASCII.GetBytes("wokka wokka!!!")));
-        string PLAIN = File.ReadAllText("/home/jewpigeon/Рабочий стол/6.txt");
+        string PLAIN = File.ReadAllText(PATH);
         byte[] ciph = Convert.FromBase64String(PLAIN);
         string cipherText = Encoding.ASCII.GetString(ciph);
       //  Console.WriteLine(cipherText + "\n\n\n");
