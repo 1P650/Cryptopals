@@ -11,7 +11,7 @@ public class SET2 {
     }
 
     public static void CHALLENGE_10() {
-        string PLAINTEXT = File.ReadAllText("/home/jewpigeon/Рабочий стол/10.txt");
+        string PLAINTEXT = File.ReadAllText("10.txt");
         byte[] plain = Convert.FromBase64String(PLAINTEXT);
         byte[] c = CipherUtil_S2.AES_CBC_DECRYPT(plain, Encoding.ASCII.GetBytes("YELLOW SUBMARINE"), new byte[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0});
         Console.WriteLine(Encoding.ASCII.GetString(c));
