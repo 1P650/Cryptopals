@@ -136,9 +136,6 @@ public class CipherUtil_S2 {
     }
 
     public static byte[] encryption_oracle_2(byte[] input, byte[] const_key, byte[] unknown_string){
-       string UNKNOWN = Encoding.ASCII.GetString(
-               Convert.FromBase64String(
-                       "Um9sbGluJyBpbiBteSA1LjAKV2l0aCBteSByYWctdG9wIGRvd24gc28gbXkgaGFpciBjYW4gYmxvdwpUaGUgZ2lybGllcyBvbiBzdGFuZGJ5IHdhdmluZyBqdXN0IHRvIHNheSBoaQpEaWQgeW91IHN0b3A/IE5vLCBJIGp1c3QgZHJvdmUgYnkK"));
 
             string FULL = Encoding.ASCII.GetString(input) + Encoding.ASCII.GetString(unknown_string);
 
