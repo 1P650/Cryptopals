@@ -34,7 +34,7 @@ public class SET1 {
     }
 
     public static void CHALLENGE_4() {
-        string[] CONTENTS = File.ReadAllLines("4.txt");
+        string[] CONTENTS = File.ReadAllLines("/home/jewpigeon/Рабочий стол/4.txt");
 
         string Plain = XorBreaker_S1.Break(CONTENTS).Key;
         Console.WriteLine(Plain);
@@ -51,7 +51,7 @@ public class SET1 {
 
     public static void CHALLENGE_6() {
 
-        string PLAIN = File.ReadAllText("6.txt");
+        string PLAIN = File.ReadAllText("/home/jewpigeon/Рабочий стол/6.txt");
         byte[] ciph = Convert.FromBase64String(PLAIN);
         string cipherText = Encoding.ASCII.GetString(ciph);
         //  Console.WriteLine(cipherText + "\n\n\n");
@@ -62,7 +62,7 @@ public class SET1 {
     }
 
     public static void CHALLENGE_7() {
-        string PLAIN = File.ReadAllText("7.txt");
+        string PLAIN = File.ReadAllText("/home/jewpigeon/Рабочий стол/7.txt");
 
         byte[] ciph = Convert.FromBase64String(PLAIN);
 
@@ -82,7 +82,7 @@ public class SET1 {
 
 
     public static void CHALLENGE_8() {
-        string[] PLAIN = File.ReadAllLines("8.txt");
+        string[] PLAIN = File.ReadAllLines("/home/jewpigeon/Рабочий стол/8.txt");
         for (byte i = 0; i < PLAIN.Length; i++) {
             byte[] guess;
             guess = HexUtil_S1.HexStrToByteArray(PLAIN[i]);
