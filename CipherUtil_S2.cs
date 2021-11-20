@@ -149,13 +149,25 @@ public class CipherUtil_S2 {
     }
 
 
-    public static byte[] encryption_oracle_4(byte[] input, byte[] const_key, byte[] unknown_string) {
+    public static byte[] encryption_oracle_4(byte[] input, byte[] const_key) {
+        RNGCryptoServiceProvider random =new RNGCryptoServiceProvider();
+        string unknown_string = Encoding.ASCII.GetString(
+                Convert.FromBase64String(
+                        "Um9sbGluJyBpbiBteSA1LjAKV2l0aCBteSByYWctdG9wIGRvd24gc28gbXkgaGFpciBjYW4gYmxvdwpUaGUgZ2lybGllcyBvbiBzdGFuZGJ5IHdhdmluZyBqdXN0IHRvIHNheSBoaQpEaWQgeW91IHN0b3A/IE5vLCBJIGp1c3QgZHJvdmUgYnkK"));
 
 
-        string FULL = Encoding.ASCII.GetString(input) + Encoding.ASCII.GetString(unknown_string);
-        byte[] rndAppend = new byte[new Random(DateTime.Now.Millisecond * DateTime.Now.Second + DateTime.Now.Minute * DateTime.UtcNow.Second).Next(11, 43)];
+        byte[] n = new byte[4];
+        random.GetBytes(n);
+        byte[] rndAppend = new byte[Math.Abs(BitConverter.ToInt32(n,0)) % 16 + 12];
+        random.GetBytes(rndAppend);
+        string inputAndUnknown = Encoding.ASCII.GetString(input) + unknown_string;
+        byte[] inputAndUnknown_Bytes = Encoding.ASCII.GetBytes(inputAndUnknown);
+        byte[] FullString_Bytes = new byte[inputAndUnknown_Bytes.Length + rndAppend.Length];
+        Array.Copy(rndAppend, 0 , FullString_Bytes, 0, rndAppend.Length);
+        Array.Copy(inputAndUnknown_Bytes, 0 , FullString_Bytes, rndAppend.Length, inputAndUnknown_Bytes.Length);
 
-        byte[] plain = Encoding.ASCII.GetBytes(FULL);
+
+        byte[] plain = FullString_Bytes;
         plain = pad(plain, 16);
         byte[] ciph = AES_ECB_ENCRYPT(plain, const_key);
         return ciph;
