@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -158,8 +159,9 @@ public class CipherUtil_S2 {
 
         byte[] n = new byte[4];
         random.GetBytes(n);
-        byte[] rndAppend = new byte[Math.Abs(BitConverter.ToInt32(n,0)) % 16 + 12];
+        byte[] rndAppend = new byte[Math.Abs(BitConverter.ToInt32(n,0)) % 256 + 15];
         random.GetBytes(rndAppend);
+        Console.WriteLine(rndAppend.Length);
         string inputAndUnknown = Encoding.ASCII.GetString(input) + unknown_string;
         byte[] inputAndUnknown_Bytes = Encoding.ASCII.GetBytes(inputAndUnknown);
         byte[] FullString_Bytes = new byte[inputAndUnknown_Bytes.Length + rndAppend.Length];
@@ -173,6 +175,28 @@ public class CipherUtil_S2 {
         return ciph;
 
 
+    }
+
+    public static byte[] encryption_oracle_4_fixed(byte[] input, byte[] const_key, byte[] const_random_prefix){
+
+        string unknown_string = Encoding.ASCII.GetString(
+                Convert.FromBase64String(
+                        "Um9sbGluJyBpbiBteSA1LjAKV2l0aCBteSByYWctdG9wIGRvd24gc28gbXkgaGFpciBjYW4gYmxvdwpUaGUgZ2lybGllcyBvbiBzdGFuZGJ5IHdhdmluZyBqdXN0IHRvIHNheSBoaQpEaWQgeW91IHN0b3A/IE5vLCBJIGp1c3QgZHJvdmUgYnkK"));
+
+
+
+
+        string inputAndUnknown = Encoding.ASCII.GetString(input) + unknown_string;
+        byte[] inputAndUnknown_Bytes = Encoding.ASCII.GetBytes(inputAndUnknown);
+        byte[] FullString_Bytes = new byte[inputAndUnknown_Bytes.Length + const_random_prefix.Length];
+        Array.Copy(const_random_prefix, 0 , FullString_Bytes, 0, const_random_prefix.Length);
+        Array.Copy(inputAndUnknown_Bytes, 0 , FullString_Bytes, const_random_prefix.Length, inputAndUnknown_Bytes.Length);
+
+
+        byte[] plain = FullString_Bytes;
+        plain = pad(plain, 16);
+        byte[] ciph = AES_ECB_ENCRYPT(plain, const_key);
+        return ciph;
     }
 
     public static byte[] encryption_oracle_3(byte[] input, byte[] const_key) {

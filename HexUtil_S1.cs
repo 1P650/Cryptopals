@@ -60,4 +60,39 @@ public static class HexUtil_S1
 
         return true;
     }
+
+    public static bool isSubArray(byte []A, byte []B,
+            int n, int m)
+    {
+        // Two pointers to traverse the arrays
+        int i = 0, j = 0;
+
+        // Traverse both arrays simultaneously
+        while (i < n && j < m)
+        {
+
+            // If element matches
+            // increment both pointers
+            if (A[i] == B[j])
+            {
+
+                i++;
+                j++;
+
+                // If array B is completely
+                // traversed
+                if (j == m)
+                    return true;
+            }
+
+                // If not,
+                // increment i and reset j
+            else
+            {
+                i = i - j + 1;
+                j = 0;
+            }
+        }
+        return false;
+    }
 }
