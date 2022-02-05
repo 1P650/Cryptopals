@@ -295,7 +295,7 @@ public class SET2 {
         random.GetBytes(n);
         byte[] rndAppend = new byte[Math.Abs(BitConverter.ToInt32(n, 0)) % 256 + 15];
         random.GetBytes(rndAppend);
-//        Console.WriteLine(rndAppend.Length);
+        //        Console.WriteLine(rndAppend.Length);
 
 
 
@@ -307,9 +307,9 @@ public class SET2 {
         string SIGNATURE_CHECK = new StringBuilder("").Append('A', 48).ToString();
         byte[] enc = CipherUtil_S2.encryption_oracle_4_fixed(Encoding.ASCII.GetBytes(SIGNATURE_CHECK), KEY_CONST_RANDOM, rndAppend);
 
-//        string hex = HexUtil_S1.ByteArrayToHexStr(enc);
-//        hex = Regex.Replace(hex, "(.{32})", "$& ");
-//        Console.WriteLine(hex);
+        //        string hex = HexUtil_S1.ByteArrayToHexStr(enc);
+        //        hex = Regex.Replace(hex, "(.{32})", "$& ");
+        //        Console.WriteLine(hex);
 
 
         int CHUNCK_INDEX = 0;
@@ -347,27 +347,27 @@ public class SET2 {
             OBTAINED_PREFIX_LENGTH = CHUNCK_INDEX;
             BLOCK_APPLIER = 0;
             ENC_LENGTH = enc.Length - CHUNCK_INDEX + 32;
-           // Console.WriteLine("LENGTH - " + OBTAINED_PREFIX_LENGTH);
+            // Console.WriteLine("LENGTH - " + OBTAINED_PREFIX_LENGTH);
         }
         else {
 
             int L = 1;
-            while(L!=32){
+            while (L != 32) {
                 string SIGNATURE_TEST = new StringBuilder("").Append('A', L).ToString();
                 byte[] ENCRYPTED_L = CipherUtil_S2.encryption_oracle_4_fixed(Encoding.ASCII.GetBytes(SIGNATURE_TEST), KEY_CONST_RANDOM, rndAppend);
                 byte[] SIGNATURE_TEST_ENCRYPTED = new byte[16];
-                Array.Copy(ENCRYPTED_L, CHUNCK_INDEX, SIGNATURE_TEST_ENCRYPTED, 0 ,16);
-                if(HexUtil_S1.ByteArrayCompare(SIGNATURE_TEST_ENCRYPTED, SIGNATURE_ENCRYPTED)){
+                Array.Copy(ENCRYPTED_L, CHUNCK_INDEX, SIGNATURE_TEST_ENCRYPTED, 0, 16);
+                if (HexUtil_S1.ByteArrayCompare(SIGNATURE_TEST_ENCRYPTED, SIGNATURE_ENCRYPTED)) {
 
-                    OBTAINED_PREFIX_LENGTH =  CHUNCK_INDEX + (16 - L);
-                    BLOCK_APPLIER = L-16;
+                    OBTAINED_PREFIX_LENGTH = CHUNCK_INDEX + (16 - L);
+                    BLOCK_APPLIER = L - 16;
                     ENC_LENGTH = ENCRYPTED_L.Length - CHUNCK_INDEX + 16;
                     //Console.WriteLine(L-16 + " " + rndAppend.Length % 16);
                     break;
                 }
                 else L++;
             }
-           // Console.WriteLine(OBTAINED_PREFIX_LENGTH);
+            // Console.WriteLine(OBTAINED_PREFIX_LENGTH);
 
         }
 
@@ -391,7 +391,7 @@ public class SET2 {
                 bool found = false;
 
                 for (int i = 0; i < 127; i++) {
-                    string q = PREFIX_DESTROYER +  MY_STRING + guess + (char)i;
+                    string q = PREFIX_DESTROYER + MY_STRING + guess + (char)i;
                     byte[] ENCRYPTION_GUESS = CipherUtil_S2.encryption_oracle_4_fixed(Encoding.ASCII.GetBytes(q), KEY_CONST_RANDOM, rndAppend);
 
                     byte[] BLOCK_2 = new byte[16];
@@ -406,13 +406,12 @@ public class SET2 {
                 if (found == false)break;
 
 
-
             }
             MY_STRING = guess.Substring(1, guess.Length - 1);
             guessedAll += guess;
 
             BLOCKS_TO_COPY++;
-           if((BLOCKS_TO_COPY + 1 )* 16 >= ENC_LENGTH) break;;
+            if ((BLOCKS_TO_COPY + 1 ) * 16 >= ENC_LENGTH) break;;
 
 
         }
@@ -421,12 +420,32 @@ public class SET2 {
         Console.WriteLine(DECRYPTED);
 
 
+    }
 
-
+    public static void CHALLENGE_14_ALT() {
 
 
 
     }
 
+    public static void CHALLENGE_15() {
+        string PADDED = "ICE ICE BABY\x04\x04\x04\x04";
+        byte[] PADDED_BYTE = Encoding.ASCII.GetBytes(PADDED);
+        byte[] UNPADDED = CipherUtil_S2.validatePKCS7(PADDED_BYTE);
+        Console.WriteLine(Encoding.ASCII.GetString(UNPADDED));
+    }
+
+
+    public static void CHALLENGE_16() {
+        byte[] KEY_CONST_RANDOM = new byte[16];
+        new Random(17).NextBytes(KEY_CONST_RANDOM);
+        string input = "AAAAAAAAAAAAAAAA:admin&true:AAAAAAAAAAAAAAAAAAAA";
+        byte[] enc = CipherUtil_S2.CH16_EncryptFunction(input, KEY_CONST_RANDOM, KEY_CONST_RANDOM);
+        enc[32] = (byte)(enc[32] ^ ':' ^ ';');
+        enc[38] = (byte)(enc[38] ^ '&'  ^ '=');
+        enc[43] = (byte)(enc[43] ^ ':'  ^ ';');
+        bool CHECK = CipherUtil_S2.CH16_FindAdmin(enc, KEY_CONST_RANDOM, KEY_CONST_RANDOM);
+        Console.WriteLine(CHECK);
+    }
 
 }

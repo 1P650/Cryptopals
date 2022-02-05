@@ -5,7 +5,7 @@ public class Program
 {
 	public static void Main(String[] args)
 	{
-     SET2.CHALLENGE_14_FixedPrefix();
+     SET2.CHALLENGE_14_ALT();
 
 	}
 

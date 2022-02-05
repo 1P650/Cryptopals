@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
-using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.RegularExpressions;
 
 public class CipherUtil_S2 {
     public static byte[] pad(byte[] input, int to) {
@@ -151,7 +151,7 @@ public class CipherUtil_S2 {
 
 
     public static byte[] encryption_oracle_4(byte[] input, byte[] const_key) {
-        RNGCryptoServiceProvider random =new RNGCryptoServiceProvider();
+        RNGCryptoServiceProvider random = new RNGCryptoServiceProvider();
         string unknown_string = Encoding.ASCII.GetString(
                 Convert.FromBase64String(
                         "Um9sbGluJyBpbiBteSA1LjAKV2l0aCBteSByYWctdG9wIGRvd24gc28gbXkgaGFpciBjYW4gYmxvdwpUaGUgZ2lybGllcyBvbiBzdGFuZGJ5IHdhdmluZyBqdXN0IHRvIHNheSBoaQpEaWQgeW91IHN0b3A/IE5vLCBJIGp1c3QgZHJvdmUgYnkK"));
@@ -159,14 +159,14 @@ public class CipherUtil_S2 {
 
         byte[] n = new byte[4];
         random.GetBytes(n);
-        byte[] rndAppend = new byte[Math.Abs(BitConverter.ToInt32(n,0)) % 256 + 15];
+        byte[] rndAppend = new byte[Math.Abs(BitConverter.ToInt32(n, 0)) % 256 + 15];
         random.GetBytes(rndAppend);
         Console.WriteLine(rndAppend.Length);
         string inputAndUnknown = Encoding.ASCII.GetString(input) + unknown_string;
         byte[] inputAndUnknown_Bytes = Encoding.ASCII.GetBytes(inputAndUnknown);
         byte[] FullString_Bytes = new byte[inputAndUnknown_Bytes.Length + rndAppend.Length];
-        Array.Copy(rndAppend, 0 , FullString_Bytes, 0, rndAppend.Length);
-        Array.Copy(inputAndUnknown_Bytes, 0 , FullString_Bytes, rndAppend.Length, inputAndUnknown_Bytes.Length);
+        Array.Copy(rndAppend, 0, FullString_Bytes, 0, rndAppend.Length);
+        Array.Copy(inputAndUnknown_Bytes, 0, FullString_Bytes, rndAppend.Length, inputAndUnknown_Bytes.Length);
 
 
         byte[] plain = FullString_Bytes;
@@ -177,7 +177,7 @@ public class CipherUtil_S2 {
 
     }
 
-    public static byte[] encryption_oracle_4_fixed(byte[] input, byte[] const_key, byte[] const_random_prefix){
+    public static byte[] encryption_oracle_4_fixed(byte[] input, byte[] const_key, byte[] const_random_prefix) {
 
         string unknown_string = Encoding.ASCII.GetString(
                 Convert.FromBase64String(
@@ -189,8 +189,8 @@ public class CipherUtil_S2 {
         string inputAndUnknown = Encoding.ASCII.GetString(input) + unknown_string;
         byte[] inputAndUnknown_Bytes = Encoding.ASCII.GetBytes(inputAndUnknown);
         byte[] FullString_Bytes = new byte[inputAndUnknown_Bytes.Length + const_random_prefix.Length];
-        Array.Copy(const_random_prefix, 0 , FullString_Bytes, 0, const_random_prefix.Length);
-        Array.Copy(inputAndUnknown_Bytes, 0 , FullString_Bytes, const_random_prefix.Length, inputAndUnknown_Bytes.Length);
+        Array.Copy(const_random_prefix, 0, FullString_Bytes, 0, const_random_prefix.Length);
+        Array.Copy(inputAndUnknown_Bytes, 0, FullString_Bytes, const_random_prefix.Length, inputAndUnknown_Bytes.Length);
 
 
         byte[] plain = FullString_Bytes;
@@ -262,6 +262,40 @@ public class CipherUtil_S2 {
             }
 
         }
+        return false;
+    }
+
+    public static byte[] validatePKCS7(byte[] PADDED) {
+        if (PADDED.Length % 16 != 0) throw new Exception("BAD PADDING");
+        byte PAD_VAL = PADDED[PADDED.Length - 1];
+        if (PAD_VAL > 15) throw new Exception("BAD PADDING");
+        for (int i = PADDED.Length - PAD_VAL; i < PADDED.Length; i++) {
+            if (PADDED[i] != PAD_VAL) throw new Exception("BAD PADDING");
+        }
+        byte[] UNPADDED = new byte[PADDED.Length - PAD_VAL];
+        Array.Copy(PADDED, 0, UNPADDED, 0, UNPADDED.Length);
+        return UNPADDED;
+
+    }
+
+    public static byte[] CH16_EncryptFunction(string userdata, byte[] key, byte[] IV) {
+        userdata = userdata.Replace("=", "");
+        userdata = userdata.Replace(";", "");
+        string comment1 = "comment1=cooking%20MCs;userdata=";
+        string comment2 = ";comment2=%20like%20a%20pound%20of%20bacon";
+        string input = comment1 + userdata + comment2;
+        byte [] inputB = Encoding.ASCII.GetBytes(input);
+        byte[] enc = CipherUtil_S2.AES_CBC_ENCRYPT(inputB, key, IV);
+        return enc;
+    }
+
+    public static bool CH16_FindAdmin(byte[] enc, byte[] key, byte[] IV) {
+        byte[] dec = CipherUtil_S2.AES_CBC_DECRYPT(enc, key, IV);
+        string decS = Encoding.ASCII.GetString(dec);
+
+
+
+        if (decS.Contains(";admin=true;")) return true;
         return false;
     }
 
